@@ -8,7 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.cbc.newsdemo.DemoApplication
-import com.cbc.newsdemo.data.models.NewsApiResponse
+import com.cbc.newsdemo.data.models.Article
 import com.cbc.newsdemo.data.repository.NewsRepository
 import com.cbc.newsdemo.utils.Resource
 import kotlinx.coroutines.launch
@@ -16,42 +16,40 @@ import retrofit2.Response
 import java.io.IOException
 
 class NewsViewModel(app: Application, val newsRepository: NewsRepository) : AndroidViewModel(app) {
-    val news: MutableLiveData<Resource<NewsApiResponse>> = MutableLiveData()
+    val news: MutableLiveData<Resource<MutableList<Article>>> = MutableLiveData()
     var newsPagination= 1
-    var breakingNewsResponse : NewsApiResponse? = null
+    var newsResponse : MutableList<Article>? = null
 
     init {
-        getAllNews("ca")
+        getAllNews()
     }
 
-    private fun handleBreakingNewsResponse(response: Response<NewsApiResponse>): Resource<NewsApiResponse>{
+    private fun handleNewsResponse(response: Response<MutableList<Article>>): Resource<MutableList<Article>>{
         if (response.isSuccessful){
             response.body()?.let { resultResponse ->
                 newsPagination++
-                if (breakingNewsResponse== null){
-                    breakingNewsResponse= resultResponse //if first page save the result to the response
+                if (newsResponse== null){
+                    newsResponse= resultResponse //if first page save the result to the response
                 }else{
-                    val oldArticles= breakingNewsResponse?.articles //else, add all articles to old
-                    val newArticle= resultResponse.articles //add new response to new
-                    oldArticles?.addAll(newArticle) //add new articles to old articles
+                    newsResponse?.addAll(resultResponse) //add new articles to old articles
                 }
-                return  Resource.Success(breakingNewsResponse ?: resultResponse)
+                return  Resource.Success(newsResponse ?: resultResponse)
             }
         }
         return Resource.Error(response.message())
     }
 
-    fun getAllNews(countryCode: String)= viewModelScope.launch {
-        fetchNews(countryCode)
+    fun getAllNews()= viewModelScope.launch {
+        fetchNews()
     }
 
-    private suspend fun fetchNews(countryCode: String){
+    private suspend fun fetchNews(){
         news.postValue(Resource.Loading())
         try{
             if (isInternetConnected()){
-                val response= newsRepository.getBreakingNews(countryCode, newsPagination)
+                val response= newsRepository.getNews("news")
                 //handling response
-                news.postValue(handleBreakingNewsResponse(response))
+                news.postValue(handleNewsResponse(response))
             }else{
                 news.postValue(Resource.Error("No Internet Connection"))
             }

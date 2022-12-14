@@ -5,32 +5,29 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.cbc.newsdemo.R
 import com.cbc.newsdemo.databinding.FragmentNewsBinding
 import com.cbc.newsdemo.ui.MainActivity
 import com.cbc.newsdemo.ui.NewsViewModel
 import com.cbc.newsdemo.ui.adapters.NewsAdapter
-import com.cbc.newsdemo.utils.Constants.Companion.QUERY_PAGE_SIZE
-import androidx.navigation.fragment.findNavController
 import com.cbc.newsdemo.utils.Resource
 
 class NewsFragment : Fragment() {
     lateinit var viewModel: NewsViewModel
-    lateinit var newsAdapter: NewsAdapter
+    private lateinit var newsAdapter: NewsAdapter
     var queryPageSize = 0
 
     private var _binding: FragmentNewsBinding? = null
 
     private val binding get() = _binding!!
-    val TAG= "NewsFragment"
+    private val TAG= "NewsFragment"
     var isLoading= false
     var isLastPage= false
-    var isScrolling= false
+    //var isScrolling= false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,9 +35,7 @@ class NewsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentNewsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,11 +43,11 @@ class NewsFragment : Fragment() {
 
         viewModel = (activity as MainActivity).viewModel
 
-        newsAdapter= NewsAdapter()
+        newsAdapter= NewsAdapter(context)
         binding.rvNews.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(activity)
-            addOnScrollListener(this@NewsFragment.scrollListener)
+            //addOnScrollListener(this@NewsFragment.scrollListener)
 
         }
         newsAdapter.setOnItemClickListener {
@@ -69,9 +64,9 @@ class NewsFragment : Fragment() {
                     hideProgressBar()
                     //check null
                     response.data?.let { newsResponse ->
-                        newsAdapter.differ.submitList(newsResponse.articles.toList())
-                        queryPageSize = newsResponse.articles.size
-                        val totalPages = newsResponse.totalResults / queryPageSize + 2
+                        newsAdapter.differ.submitList(newsResponse.toList())
+                        queryPageSize = newsResponse.size
+                        val totalPages = queryPageSize / queryPageSize + 2
                         isLastPage = viewModel.newsPagination == totalPages
                         if (isLastPage) {
                             binding.rvNews.setPadding(0, 0, 0, 0)
@@ -102,7 +97,7 @@ class NewsFragment : Fragment() {
         isLoading= true
     }
 
-    val scrollListener= object : RecyclerView.OnScrollListener(){
+    /*private val scrollListener= object : RecyclerView.OnScrollListener(){
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
 
@@ -119,7 +114,7 @@ class NewsFragment : Fragment() {
             val shouldPaginate = (!isLoading && !isLastPage) && isAtLastItem && isNotAtBeginning && isTotalMoreThanVisible && isScrolling
 
             if (shouldPaginate){
-                viewModel.getAllNews("ca")
+                viewModel.getAllNews()
                 isScrolling= false
             }
         }
@@ -130,7 +125,7 @@ class NewsFragment : Fragment() {
                 isScrolling= true
             }
         }
-    }
+    }*/
 
     override fun onDestroyView() {
         super.onDestroyView()

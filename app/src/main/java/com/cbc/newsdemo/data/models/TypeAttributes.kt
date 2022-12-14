@@ -1,0 +1,31 @@
+package com.cbc.newsdemo.data.models
+
+data class TypeAttributes(
+    val uppercaseHeadline: Boolean?,
+    val components: Components?,
+    val url: String?,
+    val urlSlug: String?,
+    val deck: String?,
+    val imageSmall: String?,
+    val imageLarge: String?,
+    val imageAspects: String?,
+    val flag: String?,
+    val flags: Flag?,
+    val displayComments: Boolean?,
+    val commentsSectionId: String?,
+    val trending: Trending?,
+    val mediaDuration: Int?,
+    val media: String?,
+    val mediaId: String?,
+    val mediaStreamType: String?,
+    val mediaCaptionUrl: String?,
+    val show: String?,
+    val showSlug: String?,
+    val body: BodyContain?,
+    val sectionList: List<String>?,
+    val sectionLabels: List<String>?,
+    val categories: List<Category>?,
+    val contextualHeadlines: List<ContextualHeadline>?,
+    val headline: Headline?,
+    val author: Author?
+)

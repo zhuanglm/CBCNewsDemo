@@ -10,17 +10,9 @@ class NewsRepository(
     val db: ArticleDatabase //parameter
 ) {
 
-    /*
-    function that directly queries our api for the breaking news
-     */
-    suspend fun getBreakingNews(countryCode:String, pageNumber:Int)=
-        RetrofitBuilder.apiService(Constants.BASE_URL).getBreakingNews(countryCode, pageNumber)
+    suspend fun getNews(lineupSlug:String)=
+        RetrofitBuilder.apiService(Constants.BASE_URL).getNews("news")
 
-    /*
-    function that query our api for searched news
-     */
-    suspend fun searchNews(searchQuery: String, pageNumber: Int)=
-        RetrofitBuilder.apiService(Constants.BASE_URL).searchForNews(searchQuery, pageNumber)
 
     /*
     function to insert article to db

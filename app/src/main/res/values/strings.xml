@@ -4,4 +4,10 @@
     <string name="title_saved">Like</string>
 
     <string name="save">Save</string>
+    <string name="source">SOURCE</string>
+    <string name="image">IMAGE</string>
+    <string name="title">TITLE</string>
+    <string name="description">DESCRIPTION</string>
+    <string name="published_at">PUBLISHED AT</string>
+    <string name="type">TYPE</string>
 </resources>
