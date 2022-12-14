@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CBCNewsDemo</string>
+    <string name="title_news">News</string>
+    <string name="title_saved">Like</string>
+
+    <string name="save">Save</string>
+</resources>
