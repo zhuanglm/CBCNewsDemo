@@ -43,7 +43,9 @@ class NewsAdapter(activity: Context?) : RecyclerView.Adapter<NewsAdapter.Article
         holder.binding.apply {
             Glide.with(holder.itemView).load(article.typeAttributes?.imageSmall)
                 .into(ivArticleImage)
-            tvSource.text = article.typeAttributes?.sectionLabels?.last()
+            article.typeAttributes?.sectionLabels?.let {
+                if (it.isNotEmpty()) tvSource.text = it.last()
+            }
             tvTitle.text = article.title
 
             tvDescription.text = article.description

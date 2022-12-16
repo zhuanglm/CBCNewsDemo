@@ -1,4 +1,4 @@
-package com.cbc.newsdemo.ui.news
+package com.cbc.newsdemo.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -11,8 +11,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cbc.newsdemo.R
 import com.cbc.newsdemo.databinding.FragmentNewsBinding
-import com.cbc.newsdemo.ui.MainActivity
-import com.cbc.newsdemo.ui.NewsViewModel
 import com.cbc.newsdemo.ui.adapters.NewsAdapter
 import com.cbc.newsdemo.utils.Resource
 
@@ -52,29 +50,27 @@ class NewsFragment : Fragment() {
         }
         newsAdapter.setOnItemClickListener {
             val bundle= Bundle().apply{
-                //adding article to the bundle
                 putSerializable("article", it)
             }
             findNavController().navigate(R.id.action_NewsFragment_to_articleFragment, bundle)
         }
 
+        binding.swipeContainer.setOnRefreshListener {
+            //newsAdapter.differ.submitList(null)
+            viewModel.getAllNews()
+        }
+
         viewModel.news.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is Resource.Success -> {
-                    hideProgressBar()
+                    binding.swipeContainer.isRefreshing = false
                     //check null
                     response.data?.let { newsResponse ->
                         newsAdapter.differ.submitList(newsResponse.toList())
-                        queryPageSize = newsResponse.size
-                        val totalPages = queryPageSize / queryPageSize + 2
-                        isLastPage = viewModel.newsPagination == totalPages
-                        if (isLastPage) {
-                            binding.rvNews.setPadding(0, 0, 0, 0)
-                        }
                     }
                 }
                 is Resource.Error -> {
-                    hideProgressBar()
+                    binding.swipeContainer.isRefreshing = false
                     response.message?.let { message ->
                         Log.e(TAG, "An error occured: $message")
                         Toast.makeText(activity, "An error occurred: $message", Toast.LENGTH_LONG)
@@ -82,50 +78,11 @@ class NewsFragment : Fragment() {
                     }
                 }
                 is Resource.Loading -> {
-                    showProgressBar()
+                    binding.swipeContainer.isRefreshing = true
                 }
             }
         }
     }
-
-    private fun hideProgressBar(){
-        _binding?.pbPagination?.visibility= View.INVISIBLE
-        isLoading= false
-    }
-    private fun showProgressBar(){
-        _binding?.pbPagination?.visibility= View.VISIBLE
-        isLoading= true
-    }
-
-    /*private val scrollListener= object : RecyclerView.OnScrollListener(){
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-
-            //manually calculating payout numbers for pagination
-            val layoutManager= recyclerView.layoutManager as LinearLayoutManager
-            val firstVisibleItemPosition= layoutManager.findFirstVisibleItemPosition()
-            val visibleItemCount= layoutManager.childCount
-            val totalItemCount= layoutManager.itemCount
-
-            val isAtLastItem= firstVisibleItemPosition+ visibleItemCount >= totalItemCount
-            val isNotAtBeginning= firstVisibleItemPosition >= 0
-            val isTotalMoreThanVisible= totalItemCount >= queryPageSize
-
-            val shouldPaginate = (!isLoading && !isLastPage) && isAtLastItem && isNotAtBeginning && isTotalMoreThanVisible && isScrolling
-
-            if (shouldPaginate){
-                viewModel.getAllNews()
-                isScrolling= false
-            }
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
-                isScrolling= true
-            }
-        }
-    }*/
 
     override fun onDestroyView() {
         super.onDestroyView()

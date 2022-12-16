@@ -7,28 +7,21 @@ import com.cbc.newsdemo.utils.Constants
 
 
 class NewsRepository(
-    val db: ArticleDatabase //parameter
+    val db: ArticleDatabase
 ) {
 
     suspend fun getNews(lineupSlug:String)=
         RetrofitBuilder.apiService(Constants.BASE_URL).getNews("news")
 
+    suspend fun insert(article: Article)=
+        db.getArticleDao().insert(article)
 
-    /*
-    function to insert article to db
-     */
-    suspend fun upsert(article: Article)=
-        db.getArticleDao().upsert(article)
-
-    /*
-    function to get saved news from db
-     */
     fun getSavedNews()=
         db.getArticleDao().getAllArticles()
 
-    /*
-    function to delete articles from db
-     */
+    fun getSavedNewsBy(id: Int)=
+        db.getArticleDao().getArticle(id)
+
     suspend fun deleteArticle(article: Article)=
         db.getArticleDao().deleteArticle(article)
 }

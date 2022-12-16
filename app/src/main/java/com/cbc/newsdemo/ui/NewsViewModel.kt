@@ -17,23 +17,23 @@ import java.io.IOException
 
 class NewsViewModel(app: Application, val newsRepository: NewsRepository) : AndroidViewModel(app) {
     val news: MutableLiveData<Resource<MutableList<Article>>> = MutableLiveData()
-    var newsPagination= 1
     var newsResponse : MutableList<Article>? = null
+    private var typeSet: MutableSet<String> = hashSetOf()
 
     init {
         getAllNews()
     }
 
-    private fun handleNewsResponse(response: Response<MutableList<Article>>): Resource<MutableList<Article>>{
-        if (response.isSuccessful){
+    private fun handleNewsResponse(response: Response<MutableList<Article>>): Resource<MutableList<Article>> {
+        if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
-                newsPagination++
-                if (newsResponse== null){
-                    newsResponse= resultResponse //if first page save the result to the response
-                }else{
-                    newsResponse?.addAll(resultResponse) //add new articles to old articles
+                newsResponse = resultResponse
+                for (i in resultResponse) {
+                    i.type?.let {
+                        typeSet?.add(it)
+                    }
                 }
-                return  Resource.Success(newsResponse ?: resultResponse)
+                return Resource.Success(newsResponse ?: resultResponse)
             }
         }
         return Resource.Error(response.message())
@@ -76,5 +76,17 @@ class NewsViewModel(app: Application, val newsRepository: NewsRepository) : Andr
             capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)->true
             else -> false
         }
+    }
+
+    fun getSavedArticle()= newsRepository.getSavedNews()
+
+    fun getSavedArticleBy(id: Int)= newsRepository.getSavedNewsBy(id)
+
+    fun saveArticle(article: Article)= viewModelScope.launch {
+        newsRepository.insert(article)
+    }
+
+    fun deleteArticle(article: Article)= viewModelScope.launch {
+        newsRepository.deleteArticle(article)
     }
 }

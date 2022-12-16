@@ -1,4 +1,4 @@
-package com.cbc.newsdemo.ui.news
+package com.cbc.newsdemo.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,8 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.cbc.newsdemo.R
 import com.cbc.newsdemo.databinding.FragmentArticleBinding
-import com.cbc.newsdemo.ui.MainActivity
-import com.cbc.newsdemo.ui.NewsViewModel
 import com.google.android.material.snackbar.Snackbar
 
 class ArticleFragment : Fragment(R.layout.fragment_article){
@@ -42,12 +40,17 @@ class ArticleFragment : Fragment(R.layout.fragment_article){
             loadUrl(article.typeAttributes?.url.toString())
         }
 
-        //save article
         binding.fab.setOnClickListener{
-            //viewModel.saveArticle(article)
-            Snackbar.make(view, " Article Saved Successfully! ", Snackbar.LENGTH_SHORT).show()
+            viewModel.saveArticle(article)
+            Snackbar.make(view, getString(R.string.saved), Snackbar.LENGTH_SHORT).show()
         }
 
+        article.id?.let {
+            viewModel.getSavedArticleBy(it).observe(viewLifecycleOwner) { articles ->
+                    if (articles.isNotEmpty())
+                        binding.fab.visibility = View.GONE
+                }
+        }
 
     }
 }

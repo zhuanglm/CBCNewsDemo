@@ -10,4 +10,7 @@
     <string name="description">DESCRIPTION</string>
     <string name="published_at">PUBLISHED AT</string>
     <string name="type">TYPE</string>
+    <string name="saved"> Article Saved! </string>
+    <string name="undo">Undo</string>
+    <string name="deleted"> Article Deleted! </string>
 </resources>

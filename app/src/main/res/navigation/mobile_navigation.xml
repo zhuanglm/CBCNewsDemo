@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_news"
-        android:name="com.cbc.newsdemo.ui.news.NewsFragment"
+        android:name="com.cbc.newsdemo.ui.NewsFragment"
         android:label="@string/title_news"
         tools:layout="@layout/fragment_news">
 
@@ -22,14 +22,24 @@
 
     <fragment
         android:id="@+id/navigation_saved_news"
-        android:name="com.cbc.newsdemo.ui.savednews.SavedFragment"
+        android:name="com.cbc.newsdemo.ui.SavedFragment"
         android:label="@string/title_saved"
-        tools:layout="@layout/fragment_saved" />
+        tools:layout="@layout/fragment_saved">
+
+        <action
+            android:id="@+id/action_SavedNewsFragment_to_articleFragment"
+            app:destination="@id/articleFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
 
     <fragment
         android:id="@+id/articleFragment"
-        android:name="com.cbc.newsdemo.ui.news.ArticleFragment"
-        android:label="ArticleFragment">
+        android:name="com.cbc.newsdemo.ui.ArticleFragment"
+        android:label=""
+        tools:layout="@layout/fragment_article">
         <argument
             android:name="article"
             app:argType="com.cbc.newsdemo.data.models.Article" />
