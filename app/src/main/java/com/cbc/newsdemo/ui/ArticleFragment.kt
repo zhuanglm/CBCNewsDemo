@@ -12,7 +12,7 @@ import com.cbc.newsdemo.databinding.FragmentArticleBinding
 import com.google.android.material.snackbar.Snackbar
 
 class ArticleFragment : Fragment(R.layout.fragment_article){
-    lateinit var viewModel: NewsViewModel
+    private lateinit var viewModel: NewsViewModel
     private var _binding: FragmentArticleBinding? = null
 
     private val binding get() = _binding!!
@@ -25,9 +25,8 @@ class ArticleFragment : Fragment(R.layout.fragment_article){
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentArticleBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

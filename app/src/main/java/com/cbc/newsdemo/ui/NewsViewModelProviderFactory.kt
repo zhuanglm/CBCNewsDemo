@@ -7,7 +7,7 @@ import com.cbc.newsdemo.data.repository.NewsRepository
 
 class NewsViewModelProviderFactory(
     val app: Application,
-    val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository
     ) : ViewModelProvider.Factory{
 
     @Suppress("UNCHECKED_CAST")

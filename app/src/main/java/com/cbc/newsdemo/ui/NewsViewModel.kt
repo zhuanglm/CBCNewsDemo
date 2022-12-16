@@ -11,17 +11,59 @@ import com.cbc.newsdemo.DemoApplication
 import com.cbc.newsdemo.data.models.Article
 import com.cbc.newsdemo.data.repository.NewsRepository
 import com.cbc.newsdemo.utils.Resource
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.io.IOException
 
-class NewsViewModel(app: Application, val newsRepository: NewsRepository) : AndroidViewModel(app) {
+class NewsViewModel(app: Application, private val newsRepository: NewsRepository) : AndroidViewModel(app) {
     val news: MutableLiveData<Resource<MutableList<Article>>> = MutableLiveData()
-    var newsResponse : MutableList<Article>? = null
-    private var typeSet: MutableSet<String> = hashSetOf()
+    val connection: MutableLiveData<Boolean> = MutableLiveData()
+    private var newsResponse : MutableList<Article>? = null
+    private val allResponse: MutableList<Article> = mutableListOf()
+    var typeSet: MutableSet<String> = hashSetOf()
+    var availableTypes: MutableSet<String> = hashSetOf()
 
     init {
         getAllNews()
+    }
+
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
+
+    fun onFilterDialogClicked() {
+        _showDialog.value = true
+        availableTypes.addAll(typeSet)
+    }
+
+    fun onDialogConfirm() {
+        _showDialog.value = false
+        val tempResponse : MutableList<Article> = mutableListOf()
+        tempResponse.addAll(allResponse)
+        news.postValue(handleNewsResponse(Response.success(tempResponse)))
+    }
+
+    fun onDialogDismiss() {
+        _showDialog.value = false
+    }
+
+    private fun filterResultByType() {
+        if(availableTypes.size > 0) {
+            newsResponse?.clear()
+            allResponse.forEach { article ->
+                availableTypes.forEach { type ->
+                    if(type == article.type) {
+                        if(newsResponse == null)
+                            newsResponse = mutableListOf(article)
+                        else
+                            newsResponse?.add(article)
+                    }
+                }
+            }
+        }
+
     }
 
     private fun handleNewsResponse(response: Response<MutableList<Article>>): Resource<MutableList<Article>> {
@@ -30,9 +72,17 @@ class NewsViewModel(app: Application, val newsRepository: NewsRepository) : Andr
                 newsResponse = resultResponse
                 for (i in resultResponse) {
                     i.type?.let {
-                        typeSet?.add(it)
+                        typeSet.add(it)
                     }
                 }
+
+                if(availableTypes.size == 0 || availableTypes.size == typeSet.size) {
+                    allResponse.clear()
+                    allResponse.addAll(resultResponse)
+                }
+                else
+                    filterResultByType()
+
                 return Resource.Success(newsResponse ?: resultResponse)
             }
         }
@@ -47,11 +97,13 @@ class NewsViewModel(app: Application, val newsRepository: NewsRepository) : Andr
         news.postValue(Resource.Loading())
         try{
             if (isInternetConnected()){
-                val response= newsRepository.getNews("news")
+                val response= newsRepository.getNews()
                 //handling response
                 news.postValue(handleNewsResponse(response))
+                connection.postValue(true)
             }else{
                 news.postValue(Resource.Error("No Internet Connection"))
+                connection.postValue(false)
             }
 
         } catch (t: Throwable){

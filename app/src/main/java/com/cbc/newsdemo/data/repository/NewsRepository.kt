@@ -7,10 +7,10 @@ import com.cbc.newsdemo.utils.Constants
 
 
 class NewsRepository(
-    val db: ArticleDatabase
+    private val db: ArticleDatabase
 ) {
 
-    suspend fun getNews(lineupSlug:String)=
+    suspend fun getNews() =
         RetrofitBuilder.apiService(Constants.BASE_URL).getNews("news")
 
     suspend fun insert(article: Article)=

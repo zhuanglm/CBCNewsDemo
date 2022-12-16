@@ -2,7 +2,6 @@ package com.cbc.newsdemo.data.db
 
 import androidx.room.TypeConverter
 import com.cbc.newsdemo.data.models.Image
-import com.cbc.newsdemo.data.models.Source
 import com.cbc.newsdemo.data.models.TypeAttributes
 import com.google.gson.Gson
 

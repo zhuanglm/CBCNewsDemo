@@ -62,8 +62,8 @@ class NewsAdapter(activity: Context?) : RecyclerView.Adapter<NewsAdapter.Article
             if(article.type == "contentpackage") {
                 article.typeAttributes?.let { it ->
                     it.components?.let {
-                        it.primary?.let {
-                            val itemAdapter = FollowedAdapter(it)
+                        it.primary?.let { primaryList ->
+                            val itemAdapter = FollowedAdapter(primaryList)
                             rvFollowedNews.adapter = itemAdapter
                             rvFollowedNews.layoutManager = LinearLayoutManager(context)
 

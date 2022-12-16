@@ -52,6 +52,14 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        viewModel.connection.observe(this) { isConnected ->
+            if (isConnected) {
+                menu?.findItem(R.id.connection_status)?.setIcon(R.drawable.ic_connectivity_available)
+            } else {
+                menu?.findItem(R.id.connection_status)?.setIcon(R.drawable.ic_connectivity_unavailable)
+            }
+        }
+
         binding.apply {
             checkConnection.observe(this@MainActivity) {
                 if (it) {
@@ -65,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressed()

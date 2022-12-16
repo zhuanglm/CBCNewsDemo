@@ -13,4 +13,7 @@
     <string name="saved"> Article Saved! </string>
     <string name="undo">Undo</string>
     <string name="deleted"> Article Deleted! </string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="show_by_type">Filter news by type: </string>
 </resources>
